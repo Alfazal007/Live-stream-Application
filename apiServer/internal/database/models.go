@@ -5,8 +5,17 @@
 package database
 
 import (
+	"database/sql"
+
 	"github.com/google/uuid"
 )
+
+type Stream struct {
+	ID      string
+	AdminID uuid.NullUUID
+	Started sql.NullBool
+	Ended   sql.NullBool
+}
 
 type User struct {
 	ID       uuid.UUID
