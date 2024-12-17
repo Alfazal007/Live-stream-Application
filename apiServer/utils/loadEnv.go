@@ -8,8 +8,9 @@ import (
 )
 
 type EnvVariables struct {
-	DatabaseUrl string
-	PortNumber  string
+	DatabaseUrl       string
+	PortNumber        string
+	AccessTokenSecret string
 }
 
 func LoadEnvFiles() EnvVariables {
@@ -28,8 +29,13 @@ func LoadEnvFiles() EnvVariables {
 		log.Fatal("Port number not found in the environment variable")
 	}
 
+	accessTokenSecret := os.Getenv("ACCESSTOKENSECRET")
+	if accessTokenSecret == "" {
+		log.Fatal("Access token secret not found in the environment variable")
+	}
 	return EnvVariables{
-		DatabaseUrl: databaseUrl,
-		PortNumber:  portNumber,
+		DatabaseUrl:       databaseUrl,
+		PortNumber:        portNumber,
+		AccessTokenSecret: accessTokenSecret,
 	}
 }
