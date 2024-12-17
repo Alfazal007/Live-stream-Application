@@ -38,12 +38,17 @@ func (q *Queries) CreateStream(ctx context.Context, arg CreateStreamParams) (Str
 const endStream = `-- name: EndStream :one
 update stream
 set ended = true
-where id=$1
+where id=$1 and admin_id=$2
 returning id, admin_id, started, ended
 `
 
-func (q *Queries) EndStream(ctx context.Context, id string) (Stream, error) {
-	row := q.db.QueryRowContext(ctx, endStream, id)
+type EndStreamParams struct {
+	ID      string
+	AdminID uuid.NullUUID
+}
+
+func (q *Queries) EndStream(ctx context.Context, arg EndStreamParams) (Stream, error) {
+	row := q.db.QueryRowContext(ctx, endStream, arg.ID, arg.AdminID)
 	var i Stream
 	err := row.Scan(
 		&i.ID,
@@ -93,12 +98,17 @@ func (q *Queries) GetStreamFromId(ctx context.Context) (GetStreamFromIdRow, erro
 const startStream = `-- name: StartStream :one
 update stream
 set started = true
-where id=$1
+where id=$1 and admin_id=$2
 returning id, admin_id, started, ended
 `
 
-func (q *Queries) StartStream(ctx context.Context, id string) (Stream, error) {
-	row := q.db.QueryRowContext(ctx, startStream, id)
+type StartStreamParams struct {
+	ID      string
+	AdminID uuid.NullUUID
+}
+
+func (q *Queries) StartStream(ctx context.Context, arg StartStreamParams) (Stream, error) {
+	row := q.db.QueryRowContext(ctx, startStream, arg.ID, arg.AdminID)
 	var i Stream
 	err := row.Scan(
 		&i.ID,

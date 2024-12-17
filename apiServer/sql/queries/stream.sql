@@ -6,13 +6,13 @@ insert into stream
 -- name: StartStream :one
 update stream
 set started = true
-where id=$1
+where id=$1 and admin_id=$2
 returning *;
 
 -- name: EndStream :one
 update stream
 set ended = true
-where id=$1
+where id=$1 and admin_id=$2
 returning *;
 
 -- name: GetStreamFromId :one
