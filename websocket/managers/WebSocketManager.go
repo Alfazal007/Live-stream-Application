@@ -7,10 +7,38 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type UserWithConnAndType struct {
+	UserType string
+	Conn     *websocket.Conn
+}
+
 type WebSocketManager struct {
 	Mutex          sync.RWMutex
-	RoomWithPeople map[string]map[string]*websocket.Conn
-	Admins         map[string]*websocket.Conn
+	RoomWithPeople map[string]map[string]UserWithConnAndType
+}
+
+func (wsManager *WebSocketManager) HandleAdminMessage(message string, conn *websocket.Conn) {
+	var adminMessage AdminJoinType
+	err := json.Unmarshal([]byte(message), &adminMessage)
+	if err != nil || adminMessage.AdminId == "" || len(adminMessage.RoomId) != 11 || adminMessage.Token == "" {
+		return
+	}
+	wsManager.Mutex.Lock()
+	defer wsManager.Mutex.Unlock()
+	allRooms := wsManager.RoomWithPeople
+	_, exists := allRooms[adminMessage.RoomId]
+	if exists {
+		return
+	}
+	// TODO:: make an api call to check if this user is this room's admin
+	internalMap := make(map[string]UserWithConnAndType)
+	internalMap[adminMessage.AdminId] = UserWithConnAndType{
+		UserType: "ADMIN",
+		Conn:     conn,
+	}
+	allMaps := wsManager.RoomWithPeople
+	allMaps[adminMessage.RoomId] = internalMap
+	wsManager.RoomWithPeople = allMaps
 }
 
 func (wsManager *WebSocketManager) TypeChecker(messageType string, message string) bool {
@@ -40,3 +68,6 @@ func (wsManager *WebSocketManager) TypeChecker(messageType string, message strin
 		return false
 	}
 }
+
+func (wsManager *WebSocketManager) HandleUserMessage(message string) {}
+func (wsManager *WebSocketManager) HandleTextMessage(message string) {}
