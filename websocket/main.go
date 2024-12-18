@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -23,19 +24,30 @@ func wsHandler(w http.ResponseWriter, r *http.Request, wsManager *managers.WebSo
 		fmt.Println("Failed to upgrade the websocket connection")
 		return
 	}
+	// TODO:: defer a close connection
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
-		fmt.Println("Connected and read ", string(message))
+		var jsonMessage managers.Message
+		err = json.Unmarshal([]byte(message), &jsonMessage)
+		if err != nil || jsonMessage.TypeOfMessage == "" || jsonMessage.Message == "" {
+			// ignore this message because it is of invalid format
+			continue
+		}
+		isMessageCorrect := wsManager.TypeChecker(jsonMessage.TypeOfMessage, jsonMessage.Message)
+		if !isMessageCorrect {
+			continue
+		}
+		fmt.Println("ISMESSAGE CORRECT", isMessageCorrect)
 	}
 }
 
 func main() {
 	wsManager := managers.WebSocketManager{
 		Mutex:          sync.RWMutex{},
-		RoomWithPeople: make(map[string][]*websocket.Conn),
+		RoomWithPeople: make(map[string]map[string]*websocket.Conn),
 		Admins:         make(map[string]*websocket.Conn),
 	}
 
