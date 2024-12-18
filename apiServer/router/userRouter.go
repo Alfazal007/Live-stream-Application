@@ -12,5 +12,6 @@ func UserRouter(apiCfg *controllers.ApiConf) *chi.Mux {
 	r.Post("/sign-up", apiCfg.Signup)
 	r.Post("/sign-in", apiCfg.Signin)
 	r.Get("/current-user", controllers.VerifyJWT(apiCfg, http.HandlerFunc(apiCfg.GetCurrentUser)).ServeHTTP)
+	r.Post("/user-validate", apiCfg.IsValidUser)
 	return r
 }
