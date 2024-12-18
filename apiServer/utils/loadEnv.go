@@ -11,6 +11,7 @@ type EnvVariables struct {
 	DatabaseUrl       string
 	PortNumber        string
 	AccessTokenSecret string
+	Secret            string
 }
 
 func LoadEnvFiles() EnvVariables {
@@ -33,9 +34,15 @@ func LoadEnvFiles() EnvVariables {
 	if accessTokenSecret == "" {
 		log.Fatal("Access token secret not found in the environment variable")
 	}
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		log.Fatal("Secret not found in the environment variable")
+	}
+
 	return EnvVariables{
 		DatabaseUrl:       databaseUrl,
 		PortNumber:        portNumber,
 		AccessTokenSecret: accessTokenSecret,
+		Secret:            secret,
 	}
 }

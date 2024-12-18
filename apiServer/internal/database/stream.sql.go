@@ -95,6 +95,22 @@ func (q *Queries) GetStreamFromId(ctx context.Context) (GetStreamFromIdRow, erro
 	return i, err
 }
 
+const getStreamFromIdForWS = `-- name: GetStreamFromIdForWS :one
+SELECT id, admin_id, started, ended FROM stream where id=$1
+`
+
+func (q *Queries) GetStreamFromIdForWS(ctx context.Context, id string) (Stream, error) {
+	row := q.db.QueryRowContext(ctx, getStreamFromIdForWS, id)
+	var i Stream
+	err := row.Scan(
+		&i.ID,
+		&i.AdminID,
+		&i.Started,
+		&i.Ended,
+	)
+	return i, err
+}
+
 const startStream = `-- name: StartStream :one
 update stream
 set started = true

@@ -29,3 +29,6 @@ JOIN
 ON
     stream.admin_id = users.id;
 
+-- name: GetStreamFromIdForWS :one
+SELECT * FROM stream where id=$1;
+
