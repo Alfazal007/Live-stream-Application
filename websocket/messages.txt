@@ -10,3 +10,10 @@
     "message": 
         "{ \"userId\": \"d91fc546-b100-4393-9dab-677f15ac8e6f\",\"roomId\": \"IO0-g5Y-E80\",\"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MzQ2OTI1MzYsInVzZXJfaWQiOiJkOTFmYzU0Ni1iMTAwLTQzOTMtOWRhYi02NzdmMTVhYzhlNmYiLCJ1c2VybmFtZSI6InNvbWVvbmUyIn0.01n-1VKZw-81nbPiivr85C1yLIbLma7P1R1auMWOhHs\"}"
 }
+
+
+{
+    "typeOfMessage": "TEXTMESSAGE",
+    "message": 
+        "{ \"userId\": \"d91fc546-b100-4393-9dab-677f15ac8e6f\",\"roomId\": \"IO0-g5Y-E80\",\"message\": \"something sent in\", \"username\":\"p2\"}"
+}
