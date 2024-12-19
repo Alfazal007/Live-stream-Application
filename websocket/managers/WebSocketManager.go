@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"sync"
 
+	apicalls "github.com/Alfazal007/websocket/apiCalls"
+	"github.com/Alfazal007/websocket/utils"
 	"github.com/gorilla/websocket"
 )
 
@@ -30,7 +32,21 @@ func (wsManager *WebSocketManager) HandleAdminMessage(message string, conn *webs
 	if exists {
 		return
 	}
-	// TODO:: make an api call to check if this user is this room's admin
+	isValidUser := apicalls.AuthenticateUser(apicalls.AuthenticateStruct{
+		Token:  adminMessage.Token,
+		UserId: adminMessage.AdminId,
+	})
+	if !isValidUser {
+		return
+	}
+	isValidStreamAdmin := apicalls.AuthenticateAdminFunction(apicalls.AuthenticateAdmin{
+		AdminId:  adminMessage.AdminId,
+		StreamId: adminMessage.RoomId,
+		Secret:   utils.LoadEnvFiles().Secret,
+	})
+	if !isValidStreamAdmin {
+		return
+	}
 	internalMap := make(map[string]UserWithConnAndType)
 	internalMap[adminMessage.AdminId] = UserWithConnAndType{
 		UserType: "ADMIN",
