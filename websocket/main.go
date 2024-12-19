@@ -29,7 +29,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request, wsManager *managers.WebSo
 		wsManager.Mutex.RLock()
 		fmt.Println(wsManager.RoomWithPeople)
 		wsManager.Mutex.RUnlock()
-		_, message, err := conn.ReadMessage()
+		t, message, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
@@ -47,9 +47,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request, wsManager *managers.WebSo
 		case managers.JoinAdminMessage:
 			wsManager.HandleAdminMessage(jsonMessage.Message, conn)
 		case managers.JoinUserMessage:
-			wsManager.HandleUserMessage(jsonMessage.Message)
+			wsManager.HandleUserMessage(jsonMessage.Message, conn)
 		case managers.TextMessage:
-			wsManager.HandleTextMessage(jsonMessage.Message)
+			wsManager.HandleTextMessage(jsonMessage.Message, conn, t)
 		}
 		fmt.Println("ISMESSAGE CORRECT", isMessageCorrect)
 	}

@@ -1,0 +1,12 @@
+{
+    "typeOfMessage": "JOINADMIN",
+    "message": 
+        "{ \"adminId\": \"0ab7aafd-887f-45b5-bbd9-e87d810ae85e\",\"roomId\": \"IO0-g5Y-E80\",\"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MzQ2OTI0NjQsInVzZXJfaWQiOiIwYWI3YWFmZC04ODdmLTQ1YjUtYmJkOS1lODdkODEwYWU4NWUiLCJ1c2VybmFtZSI6InNvbWVvbmUxIn0.iWEDmdEhoUbQ5YksyzkmQZFczzfvu8O5hI42cJRhVZw\"}"
+}
+
+
+{
+    "typeOfMessage": "JOINUSER",
+    "message": 
+        "{ \"userId\": \"d91fc546-b100-4393-9dab-677f15ac8e6f\",\"roomId\": \"IO0-g5Y-E80\",\"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MzQ2OTI1MzYsInVzZXJfaWQiOiJkOTFmYzU0Ni1iMTAwLTQzOTMtOWRhYi02NzdmMTVhYzhlNmYiLCJ1c2VybmFtZSI6InNvbWVvbmUyIn0.01n-1VKZw-81nbPiivr85C1yLIbLma7P1R1auMWOhHs\"}"
+}

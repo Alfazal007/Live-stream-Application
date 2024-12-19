@@ -85,5 +85,69 @@ func (wsManager *WebSocketManager) TypeChecker(messageType string, message strin
 	}
 }
 
-func (wsManager *WebSocketManager) HandleUserMessage(message string) {}
-func (wsManager *WebSocketManager) HandleTextMessage(message string) {}
+func (wsManager *WebSocketManager) HandleUserMessage(message string, conn *websocket.Conn) {
+	var userMessage UserJoinType
+	err := json.Unmarshal([]byte(message), &userMessage)
+	if err != nil || userMessage.UserId == "" || len(userMessage.RoomId) != 11 || userMessage.Token == "" {
+		return
+	}
+	wsManager.Mutex.Lock()
+	defer wsManager.Mutex.Unlock()
+	allRooms := wsManager.RoomWithPeople
+	requiredRoom, exists := allRooms[userMessage.RoomId]
+	if !exists {
+		conn.Close()
+		return
+	}
+
+	isValidUser := apicalls.AuthenticateUser(apicalls.AuthenticateStruct{
+		Token:  userMessage.Token,
+		UserId: userMessage.UserId,
+	})
+	if !isValidUser {
+		return
+	}
+
+	requiredRoom[userMessage.UserId] = UserWithConnAndType{
+		Conn:     conn,
+		UserType: "USER",
+	}
+
+	allMaps := wsManager.RoomWithPeople
+	allMaps[userMessage.RoomId] = requiredRoom
+	wsManager.RoomWithPeople = allMaps
+}
+
+func (wsManager *WebSocketManager) HandleTextMessage(message string, conn *websocket.Conn, messageType int) {
+	var messageSentIn MessageType
+	err := json.Unmarshal([]byte(message), &messageSentIn)
+	if err != nil || messageSentIn.UserName == "" || len(messageSentIn.RoomId) != 11 || messageSentIn.Message == "" || messageSentIn.UserId == "" {
+		return
+	}
+	wsManager.Mutex.RLock()
+	defer wsManager.Mutex.RUnlock()
+	allRooms := wsManager.RoomWithPeople
+	requiredRoom, exists := allRooms[messageSentIn.RoomId]
+	if !exists {
+		conn.Close()
+		return
+	}
+	_, userExists := requiredRoom[messageSentIn.UserId]
+	if !userExists {
+		conn.Close()
+		return
+	}
+
+	messageToBeSent := BroadCast{
+		TypeOfMessage: "NORMALMESSAGE",
+		Message:       messageSentIn.Message,
+		Sender:        messageSentIn.UserName,
+	}
+
+	bytesSendingMessage, _ := json.Marshal(messageToBeSent)
+	for _, userWithConn := range requiredRoom {
+		if userWithConn.Conn != conn {
+			userWithConn.Conn.WriteMessage(messageType, bytesSendingMessage)
+		}
+	}
+}

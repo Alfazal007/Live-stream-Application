@@ -21,6 +21,13 @@ type MessageType struct {
 	RoomId   string `json:"roomId"`
 	UserName string `json:"username"`
 	Message  string `json:"message"`
+	UserId   string `json:"userId"`
+}
+
+type BroadCast struct {
+	TypeOfMessage string
+	Message       string
+	Sender        string
 }
 
 var (
