@@ -1,9 +1,40 @@
-function App() {
-	return (
-		<div className="text-3xl font-bold underline">
-			Hello world!
-		</div>
-	)
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { SignUp } from "./components/Signup";
+import { SignIn } from "./components/Signin";
+import UserProvider from "./context/UserContext";
+import Landing from "./components/Landing";
+import './index.css'
+
+export interface User {
+	accessToken: string;
+	refreshToken: string;
+	username: string;
+	id: string;
 }
 
-export default App 
+function App() {
+	const router = createBrowserRouter([
+		{
+			path: "/signup",
+			element: <SignUp />,
+		},
+		{
+			path: "/signin",
+			element: <SignIn />,
+		},
+		{
+			path: "/",
+			element: <Landing />,
+		},
+	]);
+
+	return (
+		<>
+			<UserProvider>
+				<RouterProvider router={router} />
+			</UserProvider>
+		</>
+	);
+}
+
+export default App;
