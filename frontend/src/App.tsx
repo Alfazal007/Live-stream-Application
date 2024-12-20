@@ -6,6 +6,7 @@ import Landing from "./components/Landing";
 import './index.css'
 import StartStream from "./components/StartStream";
 import VideoChatUser from "./components/UserWatchingStream";
+import VideoChatAdmin from "./components/AdminStreamScreen";
 
 export interface User {
 	accessToken: string;
@@ -37,7 +38,7 @@ function App() {
 		},
 		{
 			path: "/admin/stream/:streamId",
-			element: <></>
+			element: <VideoChatAdmin />
 		}
 	]);
 

@@ -33,7 +33,6 @@ export default function VideoChatUser() {
 		"message":
 			`{ "userId": "${user?.id}","roomId": "${streamId}","accessToken": "${user?.accessToken}"}`
 	}
-
 	// init type checker
 	useEffect(() => {
 		if (!user) {
