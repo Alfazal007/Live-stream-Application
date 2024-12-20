@@ -6,14 +6,16 @@ type StreamCardProps = {
 	stream: {
 		id: string,
 		creatorName: string
-	}
+	},
+	displayJoin: boolean
 }
 
-export default function StreamCard({ stream }: StreamCardProps) {
+export default function StreamCard({ stream, displayJoin }: StreamCardProps) {
 	const navigate = useNavigate()
 
 	const handleJoinStream = () => {
 		navigate(`/stream/${stream.id}`)
+		return
 	}
 
 	return (
@@ -23,7 +25,10 @@ export default function StreamCard({ stream }: StreamCardProps) {
 				<p className="text-sm text-gray-500">Stream ID: {stream.id}</p>
 			</CardContent>
 			<CardFooter>
-				<Button onClick={handleJoinStream} className="w-full">Join Stream</Button>
+				{
+					displayJoin &&
+					<Button onClick={handleJoinStream} className="w-full">Join Stream</Button>
+				}
 			</CardFooter>
 		</Card>
 	)

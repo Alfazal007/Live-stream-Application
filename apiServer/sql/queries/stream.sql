@@ -35,8 +35,16 @@ SELECT * FROM stream where id=$1;
 -- name: Get10LatestStream :many
 SELECT s.id, u.username
 FROM stream s join users u
-on  s.admin_id == u.id
+on  s.admin_id = u.id
 where s.started=true and s.ended=false
 ORDER BY s.created_at DESC
 limit 10;
+
+-- name: GetMyStreams :many
+SELECT s.id, u.username
+FROM stream s join users u
+on  s.admin_id = u.id
+where s.admin_id=$1
+ORDER BY s.created_at DESC
+limit 20;
 

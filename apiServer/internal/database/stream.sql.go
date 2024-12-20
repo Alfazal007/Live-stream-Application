@@ -98,6 +98,43 @@ func (q *Queries) Get10LatestStream(ctx context.Context) ([]Get10LatestStreamRow
 	return items, nil
 }
 
+const getMyStreams = `-- name: GetMyStreams :many
+SELECT s.id, u.username
+FROM stream s join users u
+on  s.admin_id = u.id
+where s.admin_id=$1
+ORDER BY s.created_at DESC
+limit 20
+`
+
+type GetMyStreamsRow struct {
+	ID       string
+	Username string
+}
+
+func (q *Queries) GetMyStreams(ctx context.Context, adminID uuid.NullUUID) ([]GetMyStreamsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMyStreams, adminID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMyStreamsRow
+	for rows.Next() {
+		var i GetMyStreamsRow
+		if err := rows.Scan(&i.ID, &i.Username); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getStreamFromId = `-- name: GetStreamFromId :one
 SELECT
     stream.id AS stream_id,

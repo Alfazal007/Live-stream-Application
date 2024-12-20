@@ -5,7 +5,6 @@ import UserProvider from "./context/UserContext";
 import Landing from "./components/Landing";
 import './index.css'
 import StartStream from "./components/StartStream";
-import Navbar from "./components/Navbar";
 
 export interface User {
 	accessToken: string;
