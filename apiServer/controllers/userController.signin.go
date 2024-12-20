@@ -14,6 +14,8 @@ import (
 
 type Token struct {
 	AccessToken string `json:"accessToken"`
+	Username    string `json:"username"`
+	Id          string `json:"id"`
 }
 
 func (apiCfg *ApiConf) Signin(w http.ResponseWriter, r *http.Request) {
@@ -58,5 +60,5 @@ func (apiCfg *ApiConf) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helpers.RespondWithJSON(w, 200, Token{AccessToken: token})
+	helpers.RespondWithJSON(w, 200, Token{AccessToken: token, Username: existingUser.Username, Id: existingUser.ID.String()})
 }

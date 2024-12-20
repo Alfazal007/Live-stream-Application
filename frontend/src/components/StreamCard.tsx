@@ -1,6 +1,5 @@
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Stream } from 'stream'
 import { useNavigate } from 'react-router-dom'
 
 type StreamCardProps = {
@@ -14,8 +13,6 @@ export default function StreamCard({ stream }: StreamCardProps) {
 	const navigate = useNavigate()
 
 	const handleJoinStream = () => {
-		// In a real application, you would join the stream here
-		// and then redirect to the stream page
 		navigate(`/stream/${stream.id}`)
 	}
 

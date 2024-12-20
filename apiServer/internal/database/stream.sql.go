@@ -63,8 +63,9 @@ func (q *Queries) EndStream(ctx context.Context, arg EndStreamParams) (Stream, e
 
 const get10LatestStream = `-- name: Get10LatestStream :many
 SELECT s.id, u.username
-FROM stream s, users u
-where s.started=true and s.ended=false and s.admin_id == u.id
+FROM stream s join users u
+on  s.admin_id = u.id
+where s.started=true and s.ended=false
 ORDER BY s.created_at DESC
 limit 10
 `

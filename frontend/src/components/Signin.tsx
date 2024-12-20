@@ -63,9 +63,8 @@ export const SignIn = () => {
 			console.log(res.data)
 			setUser({
 				accessToken: res.data.accessToken as string,
-				refreshToken: res.data.refreshToken as string,
 				username: res.data.username as string,
-				id: res.data.userid as string
+				id: res.data.id as string
 			});
 			navigate("/");
 		} catch (err: any) {
