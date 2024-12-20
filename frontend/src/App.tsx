@@ -5,6 +5,7 @@ import UserProvider from "./context/UserContext";
 import Landing from "./components/Landing";
 import './index.css'
 import StartStream from "./components/StartStream";
+import VideoChatUser from "./components/UserWatchingStream";
 
 export interface User {
 	accessToken: string;
@@ -32,7 +33,7 @@ function App() {
 		},
 		{
 			path: "/stream/:streamId",
-			element: <></>
+			element: <VideoChatUser />
 		},
 		{
 			path: "/admin/stream/:streamId",

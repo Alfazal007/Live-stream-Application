@@ -2,6 +2,7 @@ package managers
 
 import (
 	"encoding/json"
+	"fmt"
 	"sync"
 
 	apicalls "github.com/Alfazal007/websocket/apiCalls"
@@ -99,7 +100,6 @@ func (wsManager *WebSocketManager) HandleUserMessage(message string, conn *webso
 		conn.Close()
 		return
 	}
-
 	isValidUser := apicalls.AuthenticateUser(apicalls.AuthenticateStruct{
 		Token:  userMessage.Token,
 		UserId: userMessage.UserId,
@@ -107,7 +107,6 @@ func (wsManager *WebSocketManager) HandleUserMessage(message string, conn *webso
 	if !isValidUser {
 		return
 	}
-
 	requiredRoom[userMessage.UserId] = UserWithConnAndType{
 		Conn:     conn,
 		UserType: "USER",
@@ -132,8 +131,8 @@ func (wsManager *WebSocketManager) HandleTextMessage(message string, conn *webso
 		conn.Close()
 		return
 	}
-	_, userExists := requiredRoom[messageSentIn.UserId]
-	if !userExists {
+	userConnectionStuff, userExists := requiredRoom[messageSentIn.UserId]
+	if !userExists || userConnectionStuff.Conn != conn {
 		conn.Close()
 		return
 	}
@@ -147,7 +146,37 @@ func (wsManager *WebSocketManager) HandleTextMessage(message string, conn *webso
 	bytesSendingMessage, _ := json.Marshal(messageToBeSent)
 	for _, userWithConn := range requiredRoom {
 		if userWithConn.Conn != conn {
+			fmt.Println("sending message")
 			userWithConn.Conn.WriteMessage(messageType, bytesSendingMessage)
+		}
+	}
+}
+
+func (wsManager *WebSocketManager) CleanUp(conn *websocket.Conn) {
+	wsManager.Mutex.Lock()
+	defer wsManager.Mutex.Unlock()
+outer:
+	for roomId, roomInner := range wsManager.RoomWithPeople {
+		for userId, userConnectionData := range roomInner {
+			if conn == userConnectionData.Conn {
+				if userConnectionData.UserType == "ADMIN" {
+					// disconnect the whole room
+					allRooms := wsManager.RoomWithPeople
+					roomRemoved := allRooms[roomId]
+					delete(allRooms, roomId)
+					wsManager.RoomWithPeople = allRooms
+					for _, roomId := range roomRemoved {
+						roomId.Conn.Close()
+					}
+				} else {
+					// remove from the map and close the connection
+					newMap := roomInner
+					delete(newMap, userId)
+					wsManager.RoomWithPeople[roomId] = roomInner
+					conn.Close()
+					break outer
+				}
+			}
 		}
 	}
 }

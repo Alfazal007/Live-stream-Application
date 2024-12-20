@@ -24,7 +24,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request, wsManager *managers.WebSo
 		fmt.Println("Failed to upgrade the websocket connection")
 		return
 	}
-	// TODO:: defer a close connection
+	defer func() {
+		wsManager.CleanUp(conn)
+		conn.Close()
+	}()
+
+some:
 	for {
 		wsManager.Mutex.RLock()
 		fmt.Println(wsManager.RoomWithPeople)
@@ -50,8 +55,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request, wsManager *managers.WebSo
 			wsManager.HandleUserMessage(jsonMessage.Message, conn)
 		case managers.TextMessage:
 			wsManager.HandleTextMessage(jsonMessage.Message, conn, t)
+		default:
+			break some
 		}
-		fmt.Println("ISMESSAGE CORRECT", isMessageCorrect)
 	}
 }
 
