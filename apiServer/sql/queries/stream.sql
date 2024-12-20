@@ -32,3 +32,10 @@ ON
 -- name: GetStreamFromIdForWS :one
 SELECT * FROM stream where id=$1;
 
+-- name: Get10LatestStream :many
+SELECT s.id, u.username
+FROM stream s, users u
+where s.started=true and s.ended=false and s.admin_id == u.id
+ORDER BY s.created_at DESC
+limit 10;
+

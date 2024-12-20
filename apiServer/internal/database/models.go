@@ -11,10 +11,11 @@ import (
 )
 
 type Stream struct {
-	ID      string
-	AdminID uuid.NullUUID
-	Started sql.NullBool
-	Ended   sql.NullBool
+	ID        string
+	AdminID   uuid.NullUUID
+	CreatedAt sql.NullTime
+	Started   sql.NullBool
+	Ended     sql.NullBool
 }
 
 type User struct {

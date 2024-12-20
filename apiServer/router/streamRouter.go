@@ -13,5 +13,6 @@ func StreamRouter(apiCfg *controllers.ApiConf) *chi.Mux {
 	r.Put("/start-stream", controllers.VerifyJWT(apiCfg, http.HandlerFunc(apiCfg.StartStream)).ServeHTTP)
 	r.Put("/end-stream", controllers.VerifyJWT(apiCfg, http.HandlerFunc(apiCfg.EndStream)).ServeHTTP)
 	r.Post("/admin-validate", apiCfg.IsValidStream)
+	r.Get("/get-streams", controllers.VerifyJWT(apiCfg, http.HandlerFunc(apiCfg.GetTenStreams)).ServeHTTP)
 	return r
 }

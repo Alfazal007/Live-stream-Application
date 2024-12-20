@@ -15,7 +15,7 @@ import (
 const createStream = `-- name: CreateStream :one
 insert into stream
     (id, admin_id)
-        values ($1, $2) returning id, admin_id, started, ended
+        values ($1, $2) returning id, admin_id, created_at, started, ended
 `
 
 type CreateStreamParams struct {
@@ -29,6 +29,7 @@ func (q *Queries) CreateStream(ctx context.Context, arg CreateStreamParams) (Str
 	err := row.Scan(
 		&i.ID,
 		&i.AdminID,
+		&i.CreatedAt,
 		&i.Started,
 		&i.Ended,
 	)
@@ -39,7 +40,7 @@ const endStream = `-- name: EndStream :one
 update stream
 set ended = true
 where id=$1 and admin_id=$2
-returning id, admin_id, started, ended
+returning id, admin_id, created_at, started, ended
 `
 
 type EndStreamParams struct {
@@ -53,10 +54,47 @@ func (q *Queries) EndStream(ctx context.Context, arg EndStreamParams) (Stream, e
 	err := row.Scan(
 		&i.ID,
 		&i.AdminID,
+		&i.CreatedAt,
 		&i.Started,
 		&i.Ended,
 	)
 	return i, err
+}
+
+const get10LatestStream = `-- name: Get10LatestStream :many
+SELECT s.id, u.username
+FROM stream s, users u
+where s.started=true and s.ended=false and s.admin_id == u.id
+ORDER BY s.created_at DESC
+limit 10
+`
+
+type Get10LatestStreamRow struct {
+	ID       string
+	Username string
+}
+
+func (q *Queries) Get10LatestStream(ctx context.Context) ([]Get10LatestStreamRow, error) {
+	rows, err := q.db.QueryContext(ctx, get10LatestStream)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Get10LatestStreamRow
+	for rows.Next() {
+		var i Get10LatestStreamRow
+		if err := rows.Scan(&i.ID, &i.Username); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getStreamFromId = `-- name: GetStreamFromId :one
@@ -96,7 +134,7 @@ func (q *Queries) GetStreamFromId(ctx context.Context) (GetStreamFromIdRow, erro
 }
 
 const getStreamFromIdForWS = `-- name: GetStreamFromIdForWS :one
-SELECT id, admin_id, started, ended FROM stream where id=$1
+SELECT id, admin_id, created_at, started, ended FROM stream where id=$1
 `
 
 func (q *Queries) GetStreamFromIdForWS(ctx context.Context, id string) (Stream, error) {
@@ -105,6 +143,7 @@ func (q *Queries) GetStreamFromIdForWS(ctx context.Context, id string) (Stream, 
 	err := row.Scan(
 		&i.ID,
 		&i.AdminID,
+		&i.CreatedAt,
 		&i.Started,
 		&i.Ended,
 	)
@@ -115,7 +154,7 @@ const startStream = `-- name: StartStream :one
 update stream
 set started = true
 where id=$1 and admin_id=$2
-returning id, admin_id, started, ended
+returning id, admin_id, created_at, started, ended
 `
 
 type StartStreamParams struct {
@@ -129,6 +168,7 @@ func (q *Queries) StartStream(ctx context.Context, arg StartStreamParams) (Strea
 	err := row.Scan(
 		&i.ID,
 		&i.AdminID,
+		&i.CreatedAt,
 		&i.Started,
 		&i.Ended,
 	)
